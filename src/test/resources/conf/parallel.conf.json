@@ -1,35 +1,25 @@
-{
-  "server": "hub-cloud.browserstack.com",
-  "user": "BROWSERSTACK_USERNAME",
-  "key": "BROWSERSTACK_ACCESS_KEY",
-  "capabilities": {
-    "browserstack.use_w3c": true,
-    "bstack:options": {
-      "sessionName": "parallel_test",
-      "buildName": "testng-browserstack",
-      "projectName": "My Awesome App",
-      "debug": true
-    }
-  },
-  "environments": {
-    "chrome": {
-      "browser": "chrome"
-    },
-    "firefox": {
-      "browser": "firefox"
-    },
-    "safari": {
-      "browser": "safari",
-      "bstack:options": {
-        "os": "OS X",
-        "osVersion": "High Sierra"
-      }
-    },
-    "ie": {
-      "browser": "Internet Explorer",
-      "bstack:options": {
-        "os": "Windows",
-      }
-    }
-  }
-}
+ {
+   "server": "hub-cloud.browserstack.com",
+   "user": "mirabbas1",
+   "key": "rwnyjLPVJkn91ekUFWA4",
+   "capabilities": {
+     "build": "testng-browserstack",
+     "name": "Bstack-[TestNG] Parallel Test",
+     "browserstack.debug": true
+   },
+   "environments": {
+     "chrome": {
+       "browser": "chrome"
+     },
+     "firefox": {
+       "browser": "firefox"
+     },
+     "safari": {
+       "os": "OS X",
+       "browser": "safari"
+     },
+     "ie": {
+       "browser": "internet explorer"
+     }
+   }
+ }

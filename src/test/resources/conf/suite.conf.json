@@ -19,11 +19,8 @@
       "browser": "firefox"
     },
     "safari": {
-      "browser": "safari",
-      "bstack:options": {
-        "os": "OS X",
-        "osVersion": "High Sierra"
-      }
+      "os": "OS X",
+      "browser": "safari"
     },
     "ie": {
       "browser": "Internet Explorer",

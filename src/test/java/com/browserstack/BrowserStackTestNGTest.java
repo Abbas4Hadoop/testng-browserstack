@@ -16,13 +16,12 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
-
 public class BrowserStackTestNGTest {
     public WebDriver driver;
     private Local bsLocal;
 
-    @BeforeMethod(alwaysRun=true)
-    @org.testng.annotations.Parameters(value={"config", "environment"})
+    @BeforeMethod(alwaysRun = true)
+    @org.testng.annotations.Parameters(value = { "config", "environment" })
     @SuppressWarnings("unchecked")
     public void setUp(String config_file, String environment) throws Exception {
         JSONParser parser = new JSONParser();
@@ -34,45 +33,33 @@ public class BrowserStackTestNGTest {
         Map<String, Object> envCapabilities = (Map<String, Object>) envs.get(environment);
         Iterator<Map.Entry<String, Object>> it = envCapabilities.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, Object> pair = (Map.Entry<String, Object>) it.next();
-            capabilities.setCapability(pair.getKey().toString(), pair.getValue());
+            Map.Entry pair = (Map.Entry) it.next();
+            capabilities.setCapability(pair.getKey().toString(), pair.getValue().toString());
         }
 
-        Map<String, Object> commonCapabilities = (Map<String, Object>) config.get("capabilities");
+        Map<String, String> commonCapabilities = (Map<String, String>) config.get("capabilities");
         it = commonCapabilities.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, Object> pair = (Map.Entry<String, Object>) it.next();
-            Object envData = capabilities.getCapability(pair.getKey().toString());
-            Object resultData = pair.getValue();
-            if (envData != null && envData.getClass() == JSONObject.class) {
-                ((JSONObject) resultData).putAll((JSONObject) envData);
+            Map.Entry pair = (Map.Entry) it.next();
+            if (capabilities.getCapability(pair.getKey().toString()) == null) {
+                capabilities.setCapability(pair.getKey().toString(), pair.getValue().toString());
             }
             capabilities.setCapability(pair.getKey().toString(), resultData);
         }
 
         String username = System.getenv("BROWSERSTACK_USERNAME");
-        if(username == null) {
+        if (username == null) {
             username = (String) config.get("user");
         }
 
         String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
-        if(accessKey == null) {
+        if (accessKey == null) {
             accessKey = (String) config.get("key");
         }
 
-        this.checkAndStartBrowserStackLocal(capabilities, accessKey);
-
-        driver = new RemoteWebDriver(new URL("https://"+username+":"+accessKey+"@"+config.get("server")+"/wd/hub"), capabilities);
-    }
-
-    public void checkAndStartBrowserStackLocal(DesiredCapabilities capabilities, String accessKey) throws Exception {
-        if (bsLocal != null) {
-            return;
-        }
-        if (capabilities.getCapability("bstack:options") != null
-                && ((JSONObject) capabilities.getCapability("bstack:options")).get("local") != null
-                && ((Boolean) ((JSONObject) capabilities.getCapability("bstack:options")).get("local")) == true) {
-            bsLocal = new Local();
+        if (capabilities.getCapability("browserstack.local") != null
+                && capabilities.getCapability("browserstack.local") == "true") {
+            l = new Local();
             Map<String, String> options = new HashMap<String, String>();
             options.put("key", accessKey);
             try {
@@ -83,13 +70,16 @@ public class BrowserStackTestNGTest {
                 throw e;
             }
         }
+
+        driver = new RemoteWebDriver(
+                new URL("http://" + username + ":" + accessKey + "@" + config.get("server") + "/wd/hub"), capabilities);
     }
 
-    @AfterMethod(alwaysRun=true)
+    @AfterMethod(alwaysRun = true)
     public void tearDown() throws Exception {
         driver.quit();
-        if (bsLocal != null) {
-            bsLocal.stop();
+        if (l != null) {
+            l.stop();
         }
     }
 }
