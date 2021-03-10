@@ -18,7 +18,7 @@ import org.testng.annotations.BeforeMethod;
 
 public class BrowserStackTestNGTest {
     public WebDriver driver;
-    private Local l;
+    private Local bsLocal;
 
     @BeforeMethod(alwaysRun = true)
     @org.testng.annotations.Parameters(value = { "config", "environment" })
@@ -30,8 +30,8 @@ public class BrowserStackTestNGTest {
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
-        Map<String, String> envCapabilities = (Map<String, String>) envs.get(environment);
-        Iterator it = envCapabilities.entrySet().iterator();
+        Map<String, Object> envCapabilities = (Map<String, Object>) envs.get(environment);
+        Iterator<Map.Entry<String, Object>> it = envCapabilities.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             capabilities.setCapability(pair.getKey().toString(), pair.getValue().toString());
@@ -44,6 +44,7 @@ public class BrowserStackTestNGTest {
             if (capabilities.getCapability(pair.getKey().toString()) == null) {
                 capabilities.setCapability(pair.getKey().toString(), pair.getValue().toString());
             }
+            capabilities.setCapability(pair.getKey().toString(), resultData);
         }
 
         String username = System.getenv("BROWSERSTACK_USERNAME");
@@ -61,7 +62,13 @@ public class BrowserStackTestNGTest {
             l = new Local();
             Map<String, String> options = new HashMap<String, String>();
             options.put("key", accessKey);
-            l.start(options);
+            try {
+                bsLocal.start(options);
+            } catch (Exception e) {
+                System.out.println("Error: could not start browserstack local");
+                e.printStackTrace();
+                throw e;
+            }
         }
 
         driver = new RemoteWebDriver(
